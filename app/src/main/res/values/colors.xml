@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Background Colors -->
+    <color name="background_sky_tone">#87CEFA</color> <!-- Light Sky Blue -->
+    <color name="night_mode_background">#191970</color> <!-- Midnight Blue -->
+
+    <!-- Primary and Accent Colors -->
+    <color name="primary_color">#0077B3</color> <!-- Ocean Blue -->
+    <color name="accent_color_sun">#FFD700</color> <!-- Sun Yellow -->
+    <color name="accent_color_cloud">#D3D3D3</color> <!-- Cool Gray -->
+
+    <!-- Text and Highlight Colors -->
+    <color name="text_color">#333333</color> <!-- Charcoal Gray -->
+    <color name="highlight_color_alert">#FF4500</color> <!-- Bright Orange -->
+    <color name="link_color">#008080</color> <!-- Teal Blue -->
+</resources>

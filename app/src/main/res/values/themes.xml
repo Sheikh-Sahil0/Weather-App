@@ -1,0 +1,25 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.WeatherApp" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Primary branding color -->
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorPrimaryVariant">@color/background_sky_tone</item>
+        <item name="colorOnPrimary">@color/text_color</item> <!-- Text color on primary background -->
+
+        <!-- Secondary accent color -->
+        <item name="colorSecondary">@color/accent_color_sun</item>
+        <item name="colorOnSecondary">@color/text_color</item> <!-- Text on accent background -->
+
+        <!-- Background color -->
+        <item name="android:colorBackground">@color/background_sky_tone</item>
+
+        <!-- Highlight and alert color -->
+        <item name="android:colorError">@color/highlight_color_alert</item>
+
+        <!-- Text color -->
+        <item name="android:textColor">@color/text_color</item>
+    </style>
+
+    <style name="Theme.WeatherApp" parent="Base.Theme.WeatherApp" />
+</resources>
