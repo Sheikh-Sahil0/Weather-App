@@ -1,10 +1,13 @@
 package com.example.weatherapp;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.SearchView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.weatherapp.databinding.ActivityMainBinding;
@@ -19,19 +22,96 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import android.content.SharedPreferences;
+import android.widget.Toast;
+
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
+
+    private static final String PREFERENCES_FILE = "weather_preferences";
+    private static final String KEY_DEFAULT_CITY = "default_city";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        fetchWeatherData("Indore");
+        // Check if a default city is already set
+        SharedPreferences preferences = getSharedPreferences(PREFERENCES_FILE, MODE_PRIVATE);
+        String defaultCity = preferences.getString(KEY_DEFAULT_CITY, null);
+
+        if (defaultCity == null) {
+            // Prompt user to set the default city
+            showDefaultCityDialog();
+        } else {
+            // Proceed with fetching weather data for the default city
+            fetchWeatherData(defaultCity);
+        }
         binding.txtCurrWeatherCondtion.setSelected(true);
         binding.txtSeaLevel.setSelected(true);
         searchCity();
     }
+
+    // used to set the default value
+    private void showDefaultCityDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Set Default City");
+
+        // Set up an input field for city name
+        final EditText input = new EditText(this);
+        input.setHint("Enter city name");
+        builder.setView(input);
+
+        builder.setCancelable(false); // Prevent the dialog from being dismissed
+
+        builder.setPositiveButton("OK", null); // Set to null to handle custom behavior
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+            String cityName = input.getText().toString().trim();
+
+            if (!cityName.isEmpty()) {
+                validateCityName(cityName, dialog);
+            } else {
+                Toast.makeText(MainActivity.this, "Please enter a city name", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void validateCityName(String cityName, AlertDialog dialog) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/data/2.5/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        ApiInterface apiService = retrofit.create(ApiInterface.class);
+
+        Call<WeatherApp> call = apiService.getWeatherData(cityName,"API Key" , "metric");
+        call.enqueue(new Callback<WeatherApp>() {
+            @Override
+            public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Save city to SharedPreferences and dismiss dialog
+                    SharedPreferences preferences = getSharedPreferences("WeatherAppPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("default_city", cityName);
+                    editor.apply();
+
+                    fetchWeatherData(cityName); // Fetch weather for valid city
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(MainActivity.this, "Invalid city name. Please try again.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeatherApp> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Error occurred. Please try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void searchCity() {
         SearchView searchView = binding.searchView;
@@ -58,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         ApiInterface apiService = retrofit.create(ApiInterface.class);
 
-        Call<WeatherApp> call = apiService.getWeatherData(cityName, "031505cb0f41f6a468152ec72e91a57d", "metric");
+        Call<WeatherApp> call = apiService.getWeatherData(cityName, "API Key", "metric");
         call.enqueue(new Callback<WeatherApp>() {
             @Override
             public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
@@ -98,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<WeatherApp> call, Throwable t) {
                 // Request failed, handle the error here
                 t.printStackTrace();
+                Toast.makeText(MainActivity.this, "Invalid city name. Please try again.", Toast.LENGTH_SHORT).show();
             }
         });
     }
