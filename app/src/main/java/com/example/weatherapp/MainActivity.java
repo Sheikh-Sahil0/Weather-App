@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.weatherapp.databinding.ActivityMainBinding;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREFERENCES_FILE = "weather_preferences";
     private static final String KEY_DEFAULT_CITY = "default_city";
+    private static final String API_KEY = "API Key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
             // Proceed with fetching weather data for the default city
             fetchWeatherData(defaultCity);
         }
+        // This will allow our text to scroll horizontally (right to left)
         binding.txtCurrWeatherCondtion.setSelected(true);
         binding.txtSeaLevel.setSelected(true);
         searchCity();
@@ -87,15 +90,15 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         ApiInterface apiService = retrofit.create(ApiInterface.class);
 
-        Call<WeatherApp> call = apiService.getWeatherData(cityName,"API Key" , "metric");
+        Call<WeatherApp> call = apiService.getWeatherData(cityName,API_KEY , "metric");
         call.enqueue(new Callback<WeatherApp>() {
             @Override
             public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     // Save city to SharedPreferences and dismiss dialog
-                    SharedPreferences preferences = getSharedPreferences("WeatherAppPrefs", MODE_PRIVATE);
+                    SharedPreferences preferences = getSharedPreferences(PREFERENCES_FILE, MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("default_city", cityName);
+                    editor.putString(KEY_DEFAULT_CITY, cityName);
                     editor.apply();
 
                     fetchWeatherData(cityName); // Fetch weather for valid city
@@ -138,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         ApiInterface apiService = retrofit.create(ApiInterface.class);
 
-        Call<WeatherApp> call = apiService.getWeatherData(cityName, "API Key", "metric");
+        Call<WeatherApp> call = apiService.getWeatherData(cityName, API_KEY, "metric");
         call.enqueue(new Callback<WeatherApp>() {
             @Override
             public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
@@ -167,31 +170,40 @@ public class MainActivity extends AppCompatActivity {
                     binding.txtSunrise.setText(time(sunRise));
                     binding.txtSunset.setText(time(sunSet));
                     binding.txtSeaLevel.setText(String.format("%.2f hPa", seaLevel));
-                    binding.txtCityName.setText(cityName);
+                    binding.txtCityName.setText(cityName.substring(0,1).toUpperCase() + cityName.substring(1).toLowerCase());
                     binding.txtDayName.setText(dayName(System.currentTimeMillis()));
                     binding.txtDate.setText(date());
 
+                } else {
+                    Toast.makeText(MainActivity.this, "Weather data unavailable for this city.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<WeatherApp> call, Throwable t) {
                 // Request failed, handle the error here
-                t.printStackTrace();
-                Toast.makeText(MainActivity.this, "Invalid city name. Please try again.", Toast.LENGTH_SHORT).show();
+                if (t instanceof IOException) {
+                    Toast.makeText(MainActivity.this, "Network failure. Please check your internet connection.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "An error occurred. Please try again.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
     private String dayName(Long timestamp) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
-        return simpleDateFormat.format(new Date(timestamp * 1000));
-    }
-
-    private String time(Long timestamp) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return simpleDateFormat.format(new Date(timestamp));
     }
+
+
+    private String time(Long timestamp) {
+        // Convert timestamp from seconds to milliseconds
+        Date date = new Date(timestamp * 1000);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        return simpleDateFormat.format(date);
+    }
+
 
     private String date() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
