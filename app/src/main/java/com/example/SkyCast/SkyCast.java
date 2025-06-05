@@ -1,8 +1,8 @@
-package com.example.weatherapp;
+package com.example.SkyCast;
 
 import java.util.List;
 
-public class WeatherApp {
+public class SkyCast {
     /**
      * coord : {"lon":75.8167,"lat":26.9167}
      * weather : [{"id":721,"main":"Haze","description":"haze","icon":"50d"}]

@@ -1,16 +1,13 @@
-package com.example.weatherapp;
+package com.example.SkyCast;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.SearchView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.weatherapp.databinding.ActivityMainBinding;
+import com.example.SkyCast.databinding.ActivityMainBinding;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -31,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREFERENCES_FILE = "weather_preferences";
     private static final String KEY_DEFAULT_CITY = "default_city";
-    private static final String API_KEY = "API Key";
+    private static final String API_KEY = "031505cb0f41f6a468152ec72e91a57d";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         ApiInterface apiService = retrofit.create(ApiInterface.class);
 
-        Call<WeatherApp> call = apiService.getWeatherData(cityName,API_KEY , "metric");
-        call.enqueue(new Callback<WeatherApp>() {
+        Call<SkyCast> call = apiService.getWeatherData(cityName,API_KEY , "metric");
+        call.enqueue(new Callback<SkyCast>() {
             @Override
-            public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
+            public void onResponse(Call<SkyCast> call, Response<SkyCast> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     // Save city to SharedPreferences and dismiss dialog
                     SharedPreferences preferences = getSharedPreferences(PREFERENCES_FILE, MODE_PRIVATE);
@@ -109,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<WeatherApp> call, Throwable t) {
+            public void onFailure(Call<SkyCast> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "Error occurred. Please try again.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -141,13 +138,13 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         ApiInterface apiService = retrofit.create(ApiInterface.class);
 
-        Call<WeatherApp> call = apiService.getWeatherData(cityName, API_KEY, "metric");
-        call.enqueue(new Callback<WeatherApp>() {
+        Call<SkyCast> call = apiService.getWeatherData(cityName, API_KEY, "metric");
+        call.enqueue(new Callback<SkyCast>() {
             @Override
-            public void onResponse(Call<WeatherApp> call, Response<WeatherApp> response) {
+            public void onResponse(Call<SkyCast> call, Response<SkyCast> response) {
                 if (response.isSuccessful() && response.body() != null) {
 
-                    WeatherApp responseBody = response.body();
+                    SkyCast responseBody = response.body();
                     double temperature = responseBody.getMain().getTemp();
                     int humidity = responseBody.getMain().getHumidity();
                     double windSpeed = responseBody.getWind().getSpeed();
@@ -180,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<WeatherApp> call, Throwable t) {
+            public void onFailure(Call<SkyCast> call, Throwable t) {
                 // Request failed, handle the error here
                 if (t instanceof IOException) {
                     Toast.makeText(MainActivity.this, "Network failure. Please check your internet connection.", Toast.LENGTH_SHORT).show();

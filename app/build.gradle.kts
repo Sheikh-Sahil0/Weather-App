@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.weatherapp"
+    namespace = "com.example.SkyCast"
     compileSdk = 34
 
     buildFeatures {
@@ -11,7 +11,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.weatherapp"
+        applicationId = "com.example.SkyCast"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
