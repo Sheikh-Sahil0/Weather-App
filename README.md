@@ -51,7 +51,7 @@
 
 You can try the app by downloading the latest APK:
 
-[![Download APK](https://img.shields.io/badge/Download-APK-brightgreen?style=for-the-badge&logo=android)](https://drive.google.com/file/d/1aifBh3OqgpFR8px6ToBmUotFZWzgl-8G/view?usp=sharing)
+[![Download APK](https://img.shields.io/badge/Download-APK-brightgreen?style=for-the-badge&logo=android)](https://drive.google.com/file/d/1CaEuafROMBUOyy6J7UvO21-fT3yuw_er/view?usp=drive_link)
 
 ---
 
